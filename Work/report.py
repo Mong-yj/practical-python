@@ -1,14 +1,20 @@
+#!/usr/bin/env python3
 # report.py
 #
 # Exercise 2.4
 
 # report.py
 import csv
+import fileparse
 
 def read_portfolio(filename):
     '''
     Read a stock portfolio file into a list of dictionaries with keys
     name, shares, and price.
+    '''
+    with open(filename) as f:
+        portfolio = fileparse.parse_csv(f, types=[str,int,float])
+
     '''
     portfolio = []
     with open(filename) as f:
@@ -23,12 +29,17 @@ def read_portfolio(filename):
                  'price'   : float(record['price'])
             }
             portfolio.append(stock)
-
+    '''
     return portfolio
 
 def read_prices(filename):
     '''
     Read a CSV file of price data into a dict mapping names to prices.
+    '''
+    with open(filename) as f:
+        prices = fileparse.parse_csv(f, has_headers=False, types=[str,float])
+    prices = dict(prices)
+
     '''
     prices = {}
     with open(filename) as f:
@@ -38,7 +49,7 @@ def read_prices(filename):
                 prices[row[0]] = float(row[1])
             except IndexError:
                 pass
-
+    '''
     return prices
 
 def make_report_data(portfolio, prices):
@@ -73,10 +84,11 @@ def portfolio_report(portfolio, prices):
     output = print_report(report)
     print(output)
 
-portfolio_report('Data/portfolio.csv', 'Data/prices.csv')
 
-files = ['Data/portfolio.csv', 'Data/portfolio2.csv']
-for name in files:
-    print(f'{name:-^43s}')
-    portfolio_report(name, 'Data/prices.csv')
-    print()
+def main(args):
+    portfolio_report(args[1], args[2])
+
+
+if __name__ == '__main__':
+    import sys
+    main(sys.argv)
